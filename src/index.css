@@ -28,6 +28,7 @@ h2 {
 .card {
   border-radius: 20px !important;
   width: auto !important;
+  transition: 2s ease-in-out !important;
 }
 
 .imgSize {
@@ -55,4 +56,37 @@ h2 {
   font-size: 3rem;
   padding: 10px;
   font-weight: bolder;
+}
+
+
+.inputNumber {
+  width: 30px;
+  border-radius: 5px;
+  border: 1px solid rgb(200, 195, 195);
+}
+.btnNumber {
+  width: 25px;         /* Tamaño del botón */
+  height: 25px;        /* Tamaño del botón */
+  border-radius: 50%;  /* Hacer el botón completamente redondo */
+  padding: 0;          /* Eliminar cualquier relleno para mantener el tamaño */
+  font-size: 14px;     /* Ajustar el tamaño de fuente si es necesario */
+  display: flex;       /* Asegurarse de que el contenido (como texto) esté centrado */
+  align-items: center; /* Centrar contenido verticalmente */
+  justify-content: center; /* Centrar contenido horizontalmente */
+  color: grey;
+  border: 1px solid rgb(200, 195, 195);
+
+}
+
+
+/* Eliminar las flechas en navegadores basados en WebKit (Chrome, Safari, etc.) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+/* Eliminar las flechas en Firefox */
+input[type="number"] {
+  appearance: textfield;
 }

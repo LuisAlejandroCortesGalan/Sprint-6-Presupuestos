@@ -9,38 +9,55 @@ const cards = [
     id: 1,
     title: "SEO",
     price: 300,
-    text: "Programacioón de una web responsive completa",
+    text: "Programación de una web responsive completa",
   },
   {
     id: 2,
     title: "ADS",
     price: 400,
-    text: "Programacioón de una web responsive completa",
+    text: "Programación de una web responsive completa",
   },
   {
     id: 3,
-    title: "SEO",
+    title: "WEB",
     price: 500,
-    text: "Programacioón de una web responsive completa",
+    text: "Programación de una web responsive completa",
   },
 ];
 
 function App() {
   const [selectedCard, setSelectedCards] = useState<number[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
 
-  const totalPrice = selectedCard.reduce(
-    (acc, id) => acc + (cards.find((card) => card.id === id)?.price || 0),
-    0
-  );
-
-
-  const handleCheckboxChange = (id: number) => {
-    setSelectedCards(
-      (prev) =>
-        prev.includes(id)
-          ? prev.filter((cardId) => cardId !== id) // Desmarcar
-          : [...prev, id] // Marcar
+  // Actualiza el precio total cada vez que se cambia una selección
+  const updateTotalPrice = (id: number, price: number) => {
+    setTotalPrice((prevTotal) =>
+      selectedCard.includes(id)
+        ? prevTotal - price // Si se desmarca, resta el precio
+        : prevTotal + price // Si se marca, suma el precio
     );
+  };
+
+  // Calcula si "WEB" está seleccionado
+  const hasWeb = selectedCard.some((id) => {
+    const card = cards.find((card) => card.id === id);
+    return card?.title === "WEB"; 
+  });
+
+  const handleCheckboxChange = (id: number, price: number) => {
+    setSelectedCards((prev) =>
+      prev.includes(id)
+        ? prev.filter((cardId) => cardId !== id) // Desmarcar
+        : [...prev, id] // Marcar
+    );
+    updateTotalPrice(id, price);
+  };
+
+  const updateTotalPriceDirectly = (amount: number) => {
+    setTotalPrice((prev) => prev + amount)
+    console.log("aver amount ", amount);
+    
+    
   };
 
   return (
@@ -55,6 +72,10 @@ function App() {
               price={card.price}
               text={card.text}
               handleCheckboxChange={handleCheckboxChange}
+              hasWeb={hasWeb}
+              updateTotalPriceDirectly = {updateTotalPriceDirectly
+              }
+              // onPriceChange={updateTotalPrice}
             />
           </div>
         ))}
