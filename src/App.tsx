@@ -1,5 +1,6 @@
-import "./App.css";
-import { useState } from "react";
+import "./app.css";
+import "./index.css";
+import { useState, useEffect, useCallback } from "react";
 import { CheckBoxCard } from "./components/CheckBoxCard";
 import { CardContainer } from "./components/CardContainer";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -30,13 +31,17 @@ function App() {
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
   // Actualiza el precio total cada vez que se cambia una selección
-  const updateTotalPrice = (id: number, price: number) => {
-    setTotalPrice((prevTotal) =>
-      selectedCard.includes(id)
-        ? prevTotal - price // Si se desmarca, resta el precio
-        : prevTotal + price // Si se marca, suma el precio
-    );
-  };
+  const updateTotalPrice = useCallback(() => {
+    let total = 0;
+
+    // Calcula el precio total de las tarjetas seleccionadas
+    selectedCard.forEach((id) => {
+      const card = cards.find((card) => card.id === id);
+      if (card) total += card.price;
+    });
+
+    setTotalPrice(total);
+  }, [selectedCard]);
 
   // Calcula si "WEB" está seleccionado
   const hasWeb = selectedCard.some((id) => {
@@ -44,21 +49,22 @@ function App() {
     return card?.title === "WEB"; 
   });
 
-  const handleCheckboxChange = (id: number, price: number) => {
+  const handleCheckboxChange = (id: number) => {
     setSelectedCards((prev) =>
       prev.includes(id)
         ? prev.filter((cardId) => cardId !== id) // Desmarcar
         : [...prev, id] // Marcar
     );
-    updateTotalPrice(id, price);
+    updateTotalPrice();
   };
 
   const updateTotalPriceDirectly = (amount: number) => {
-    setTotalPrice((prev) => prev + amount)
-    console.log("aver amount ", amount);
-    
-    
+    setTotalPrice((prev) => prev + amount);
   };
+
+  useEffect(() => {
+    updateTotalPrice();
+  }, [selectedCard, updateTotalPrice]);
 
   return (
     <div className="d-flex justify-content-center align-items-center flex-column min-vh-100 gap-4">
@@ -73,9 +79,7 @@ function App() {
               text={card.text}
               handleCheckboxChange={handleCheckboxChange}
               hasWeb={hasWeb}
-              updateTotalPriceDirectly = {updateTotalPriceDirectly
-              }
-              // onPriceChange={updateTotalPrice}
+              updateTotalPriceDirectly={updateTotalPriceDirectly}
             />
           </div>
         ))}
