@@ -3,6 +3,8 @@ import "./index.css";
 import { useState, useEffect, useCallback } from "react";
 import { CheckBoxCard } from "./components/CheckBoxCard";
 import { CardContainer } from "./components/CardContainer";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Lumiflex } from "uvcanvas";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const cards = [
@@ -25,7 +27,17 @@ const cards = [
     text: "Programación de una web responsive completa",
   },
 ];
-
+function Home() {
+  return (
+    <div className="lumiflexContainer">
+      <Lumiflex/>
+      <div className="lumiflexContent">
+        <h1 className="fw-bold">Bienvenido a la Calculadora de Precios</h1>
+        <Link to="/app" className="btn btn-dark btn-lg">Ir a la calculadora</Link>
+      </div>
+    </div>
+  );
+}
 function App() {
   const [selectedCard, setSelectedCards] = useState<number[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
@@ -93,4 +105,15 @@ function App() {
   );
 }
 
-export default App;
+function Main() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/app" element={<App />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default Main;
