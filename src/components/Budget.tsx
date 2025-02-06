@@ -1,4 +1,5 @@
 import { useState } from "react";
+import RequestedBudgetSection from "./RequestedBudgetSection";
 
 interface BudgetProps {
   totalPrice: number;
@@ -39,10 +40,20 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    // if (!name || !phone || !email) {
-    //   alert("Por favor, complete todos los campos.");
-    //   return;
-    // }
+    // Validación: campos requeridos
+    if (!name.trim() || !phone.trim() || !email.trim()) {
+      setError("Por favor, complete todos los campos.");
+      return;
+    }
+
+    // Validación: al menos debe estar seleccionada una tarjeta (card)
+    if (selectedCards.length === 0) {
+      setError("Por favor, seleccione al menos un servicio.");
+      return;
+    }
+
+    // Si todo está correcto, se limpia el error
+    setError("");
 
     // Eliminar duplicados y mantener el último precio para cada título
     const uniqueCards = selectedCards.reduce((acc: Card[], card) => {
@@ -67,10 +78,10 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
       newReservation,
     ]);
 
+    // Limpiar los campos después de enviar
     setName("");
     setPhone("");
     setEmail("");
-    setError("");
   };
 
   return (
@@ -107,7 +118,7 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
           </form>
         </div>
       </div>
-
+      <RequestedBudgetSection />
       <div className="w-100 justify-content-center d-flex align-items-center gap-4 flex-column">
         {reservations.map((reservation, index) => (
           <div key={index} className="card shadow-lg p-4 flex-row">
@@ -126,9 +137,8 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
                 <h5 className="fw-bold">Servicios Contratados</h5>
                 <ul>
                   {reservation.selectedCards.map((card) => (
-                    <li key={card.title.length + card.id}>
-                      {card.title} - {card.languages} idiomas, {card.pages}{" "}
-                      páginas
+                    <li key={card.title + card.id}>
+                      {card.title} - {card.languages} idiomas, {card.pages} páginas
                     </li>
                   ))}
                 </ul>

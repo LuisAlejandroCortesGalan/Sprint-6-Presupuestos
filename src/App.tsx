@@ -9,8 +9,7 @@ import { Lumiflex } from "uvcanvas";
 import "bootstrap/dist/css/bootstrap.min.css";
 import cards from "./data/cards.json";  // Asegúrate de que cada card tenga un id único
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import RequestedBudget from "./components/RequestedBudget";
-import RequestedBudgetSection from "./components/RequestedBudgetSection";
+
 
 function Home() {
   return (
@@ -94,8 +93,6 @@ function App() {
       <div className="d-flex gap-4 flex-column align-items-center w-100">
         <Budget totalPrice={totalPrice} selectedCards={selectedCards} />
         <hr />
-        <RequestedBudgetSection />
-        <RequestedBudget />
       </div>
     </div>
   );
