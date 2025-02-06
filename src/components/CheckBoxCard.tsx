@@ -1,103 +1,111 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 
 type Props = {
-  id: number;
+  id: number; // id único
   title: string;
   price: number;
   text: string;
-  handleCheckboxChange: (cardId: number, price: number) => void;
-  hasWeb: boolean;
-  updateTotalPriceDirectly: (amount: number) => void;
+  handleCheckboxChange: (
+    price: number,
+    isSelected: boolean,
+    card: { id: number; title: string; price: number; text: string; pages: number; languages: number }
+  ) => void;
+  updateCard: (
+    card: { id: number; title: string; price: number; text: string; pages: number; languages: number }
+  ) => void;
 };
 
 export const CheckBoxCard = ({
+  id,
   title,
   price,
   text,
-  id,
   handleCheckboxChange,
-  hasWeb,
-  updateTotalPriceDirectly,
+  updateCard,
 }: Props) => {
   const [pages, setPages] = useState<number>(0);
   const [languages, setLanguages] = useState<number>(0);
-  const [checked, setChecked] = useState<boolean>(false); // Corregido aquí
+  const [isSelected, setIsSelected] = useState<boolean>(false);
 
-  // Función para incrementar el valor
-  const increment = (
-    setter: React.Dispatch<React.SetStateAction<number>>,
-  ) => {
-    setter((prev) => prev + 1);
-  };
+  const basePrice = price;
 
-  // Función para decrementar el valor
-  const decrement = (setter: React.Dispatch<React.SetStateAction<number>>) => {
-    setter((prev) => (prev > 0 ? prev - 1 : 0));
-  };
+  // Calcular el precio total dinámicamente
+  const totalReal = useMemo(() => {
+    return basePrice + (pages + languages) * 30;
+  }, [basePrice, pages, languages]);
 
-  // Función para actualizar el precio
-  const [previousTotal, setPreviousTotal] = useState<number>(0);
-
-  const updatePrice = useCallback(() => {
-    const newTotal = (pages + languages) * 30;
-    const difference = newTotal - previousTotal;
-
-    console.log("Número de páginas:", pages);
-    console.log("Número de lenguajes:", languages);
-    console.log("Precio anterior:", previousTotal);
-    console.log("Nuevo precio total:", newTotal);
-    console.log("Diferencia:", difference);
-
-    updateTotalPriceDirectly(difference); // Actualiza el precio total
-    setPreviousTotal(newTotal); // Guarda el nuevo total
-  }, [pages, languages, previousTotal, updateTotalPriceDirectly]);
-
-  useEffect(() => {
-    updatePrice();
-  }, [updatePrice]);
-
-  const handleCheckboxChangeWithReset = () => {
-    setChecked((prevChecked) => {
-      const newChecked = !prevChecked;
-      if (!newChecked) {
-        setPages(0);      // Resetear páginas
-        setLanguages(0);  // Resetear lenguajes
-      }
-      return newChecked;
+  // Al cambiar el checkbox, notificar al padre
+  const onCheckboxChange = useCallback(() => {
+    const newSelected = !isSelected;
+    setIsSelected(newSelected);
+    handleCheckboxChange(totalReal, newSelected, {
+      id,
+      title,
+      price: totalReal,
+      text,
+      pages,
+      languages,
     });
-    handleCheckboxChange(id, price); // Llamar a la función original para manejar el cambio
-  };
+  }, [isSelected, totalReal, id, title, text, pages, languages, handleCheckboxChange]);
+
+  // Cuando se modifican páginas o lenguajes y la tarjeta está seleccionada, actualizar la tarjeta en el padre
+  useEffect(() => {
+    if (isSelected) {
+      updateCard({
+        id,
+        title,
+        price: totalReal,
+        text,
+        pages,
+        languages,
+      });
+    }
+  }, [pages, languages, totalReal, isSelected, id, title, text, updateCard]);
+
+  // Actualizar valores de páginas o lenguajes
+  const updateValue = useCallback(
+    (
+      setter: React.Dispatch<React.SetStateAction<number>>,
+      field: "pages" | "languages",
+      increment: boolean
+    ) => {
+      setter((prev) => {
+        const newValue = increment ? prev + 1 : prev - 1;
+        return Math.max(0, newValue);
+      });
+    },
+    []
+  );
 
   return (
-    <div className="card shadow-lg">
+    <div className={`card shadow-lg ${isSelected ? "card-selected" : ""}`}>
       <div className="card-body d-flex flex-row gap-5 align-items-center justify-content-center">
         <div className="text-start">
           <h4>{title}</h4>
           <p>{text}</p>
         </div>
         <div className="d-flex">
-          <p className="fw-bolder fs-3">{price}</p>
+          <p className="fw-bolder fs-3">{totalReal}</p>
           <span> €</span>
         </div>
         <div className="d-flex gap-2">
           <input
             type="checkbox"
-            checked={checked} // Aseguramos que el checkbox mantenga el estado
-            onChange={handleCheckboxChangeWithReset} // Usamos la función con reset
+            checked={isSelected}
+            onChange={onCheckboxChange} // Solo se llama cuando el usuario cambia la selección
           />
           <label>Agregar</label>
         </div>
       </div>
 
-      {/* Verificar que el título sea "WEB" y si hasWeb es true */}
-      {title === "WEB" && hasWeb && (
+      {isSelected && (
         <div className="d-flex flex-column gap-3 p-3">
-          {/* Aquí agregamos los controles para el número de páginas */}
           <div className="d-flex gap-3 align-items-center justify-content-end">
             <p>Número de páginas</p>
             <button
               className="btnNumber"
-              onClick={() => decrement(setPages)}
+              onClick={() => updateValue(setPages, "pages", false)}
+              disabled={pages === 0}
             >
               -
             </button>
@@ -111,17 +119,17 @@ export const CheckBoxCard = ({
             />
             <button
               className="btnNumber"
-              onClick={() => increment(setPages)}
+              onClick={() => updateValue(setPages, "pages", true)}
             >
               +
             </button>
           </div>
-
           <div className="d-flex gap-3 align-items-center justify-content-end">
             <p>Número de lenguajes</p>
             <button
               className="btnNumber"
-              onClick={() => decrement(setLanguages)}
+              onClick={() => updateValue(setLanguages, "languages", false)}
+              disabled={languages === 0}
             >
               -
             </button>
@@ -135,7 +143,7 @@ export const CheckBoxCard = ({
             />
             <button
               className="btnNumber"
-              onClick={() => increment(setLanguages)}
+              onClick={() => updateValue(setLanguages, "languages", true)}
             >
               +
             </button>

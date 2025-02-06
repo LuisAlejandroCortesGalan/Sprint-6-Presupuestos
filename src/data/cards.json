@@ -1,0 +1,26 @@
+[
+    {
+      "id": 1,
+      "title": "SEO",
+      "price": 300,
+      "text": "Programación de una web responsive completa",
+      "languages": 0,
+      "pages": 0
+    },
+    {
+      "id": 2,
+      "title": "ADS",
+      "price": 400,
+      "text": "Programación de una web responsive completa",
+      "languages": 0,
+      "pages": 0
+    },
+    {
+      "id": 3,
+      "title": "WEB",
+      "price": 500,
+      "text": "Programación de una web responsive completa",
+      "languages": 0,
+      "pages": 0
+    }
+  ]

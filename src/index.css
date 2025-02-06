@@ -27,11 +27,14 @@ h2 {
   margin-bottom: 0 !important;
 }
 
+
 .card {
   border-radius: 20px !important;
-  width: auto !important;
+  width: 100% !important;  /* Asegura que las tarjetas ocupen todo el ancho disponible */
+  max-width: 700px;        /* Ajusta el tamaño máximo que desees */
   transition: 2s ease-in-out !important;
 }
+
 
 .imgSize {
   width: 100% !important;
@@ -91,10 +94,12 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
+
 /* Eliminar las flechas en Firefox */
 input[type="number"] {
   appearance: textfield;
 }
+
 
 .lumiflexContainer {
   position: relative;
@@ -110,4 +115,35 @@ input[type="number"] {
   transform: translate(-50%, -50%);
   text-align: center; /* Para centrar el texto */
   z-index: 1; /* Para asegurarse de que el contenido esté encima del fondo */
+}
+
+
+form {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+
+  input {
+    width: 10px;
+  }
+
+  button {
+    white-space: nowrap;
+  }
+}
+
+div h3 {
+  display: flex;
+  justify-content: start;
+}
+
+.card-selected {
+  border: 2px solid green !important;
+  transition: 0s ease-in-out !important;
+}
+
+a {
+  all: unset;
+  text-decoration: none !important;
+  color: black !important;
 }

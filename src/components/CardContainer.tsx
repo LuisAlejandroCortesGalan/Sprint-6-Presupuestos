@@ -1,6 +1,6 @@
 import fondo from "../img/fondo2.jpg";
 import { Link } from "react-router-dom";
- 
+
 export const CardContainer = () => {
   return (
     <div className="imgSize">
