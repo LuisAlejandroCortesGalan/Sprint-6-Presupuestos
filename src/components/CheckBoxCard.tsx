@@ -13,8 +13,8 @@ type Props = {
       title: string;
       price: number;
       text: string;
-      pages: number;
-      languages: number;
+      pages: number | undefined; //
+      languages: number | undefined;
     }
   ) => void;
   updateCard: (card: {
@@ -22,8 +22,8 @@ type Props = {
     title: string;
     price: number;
     text: string;
-    pages: number;
-    languages: number;
+    pages: number | undefined;
+    languages: number | undefined;
   }) => void;
 };
 

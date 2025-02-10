@@ -26,15 +26,16 @@ function Home() {
 function App() {
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [selectedCards, setSelectedCards] = useState<
-    { id: number; title: string; price: number; text: string; pages: number; languages: number }[]
-  >([]);
+  { id: number; title: string; price: number; text: string; pages?: number; languages?: number }[]
+>([]);
+
 
   // Función para seleccionar o deseleccionar una tarjeta
   const handleCheckboxChange = useCallback(
     (
       price: number,
       isSelected: boolean,
-      card: { id: number; title: string; price: number; text: string; pages: number; languages: number }
+      card: { id: number; title: string; price: number; text: string; pages: number | undefined; languages: number | undefined }
     ) => {
       if (!isSelected) {
         // Se deselecciona: restamos y removemos la tarjeta
@@ -55,7 +56,7 @@ function App() {
   );
 
   // Función para actualizar los datos de una tarjeta que ya está seleccionada.
-  const updateCard = useCallback((card: { id: number; title: string; price: number; text: string; pages: number; languages: number }) => {
+  const updateCard = useCallback((card: { id: number; title: string; price: number; text: string; pages: number | undefined; languages: number | undefined}) => {
     setSelectedCards((prev) =>
       prev.map((c) => (c.id === card.id ? card : c))
     );
@@ -65,7 +66,6 @@ function App() {
   useEffect(() => {
     const sum = selectedCards.reduce((acc, card) => acc + card.price, 0);
     setTotalPrice(sum);
-    console.log("en use effect", selectedCards);
   }, [selectedCards]);
 
   return (

@@ -33,6 +33,7 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
       email: string;
       selectedCards: Card[];
       total: number;
+      date: string;
     }[]
   >([]);
   const [error, setError] = useState<string>("");
@@ -40,22 +41,6 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Validación: campos requeridos
-    if (!name.trim() || !phone.trim() || !email.trim()) {
-      setError("Por favor, complete todos los campos.");
-      return;
-    }
-
-    // Validación: al menos debe estar seleccionada una tarjeta (card)
-    if (selectedCards.length === 0) {
-      setError("Por favor, seleccione al menos un servicio.");
-      return;
-    }
-
-    // Si todo está correcto, se limpia el error
-    setError("");
-
-    // Eliminar duplicados y mantener el último precio para cada título
     const uniqueCards = selectedCards.reduce((acc: Card[], card) => {
       const index = acc.findIndex((c) => c.title === card.title);
       if (index !== -1) {
@@ -66,12 +51,15 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
       return acc;
     }, []);
 
+    const currentDate = new Date().toLocaleString();
+
     const newReservation = {
       name,
       phone,
       email,
       selectedCards: uniqueCards,
       total: totalPrice,
+      date: currentDate,
     };
     setReservations((prevReservations) => [
       ...prevReservations,
@@ -82,6 +70,26 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
     setName("");
     setPhone("");
     setEmail("");
+  };
+
+  // Funciones para ordenar las reservas
+  const sortByDate = () => {
+    const sorted = [...reservations].sort((a, b) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    setReservations(sorted);
+  };
+
+  const sortByPrice = () => {
+    const sorted = [...reservations].sort((a, b) => a.total - b.total);
+    setReservations(sorted);
+  };
+
+  const sortByName = () => {
+    const sorted = [...reservations].sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
+    setReservations(sorted);
   };
 
   return (
@@ -118,7 +126,12 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
           </form>
         </div>
       </div>
-      <RequestedBudgetSection />
+      <RequestedBudgetSection
+        reservations={reservations}
+        sortByDate={sortByDate}
+        sortByPrice={sortByPrice}
+        sortByName={sortByName}
+      />
       <div className="w-100 justify-content-center d-flex align-items-center gap-4 flex-column">
         {reservations.map((reservation, index) => (
           <div key={index} className="card shadow-lg p-4 flex-row">
@@ -138,7 +151,8 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
                 <ul>
                   {reservation.selectedCards.map((card) => (
                     <li key={card.title + card.id}>
-                      {card.title} - {card.languages} idiomas, {card.pages} páginas
+                      {card.title} - {card.languages} idiomas, {card.pages}{" "}
+                      páginas
                     </li>
                   ))}
                 </ul>
