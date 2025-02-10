@@ -40,3 +40,13 @@
 .read-the-docs {
   color: #888;
 }
+
+
+.btn-info {
+--bs-btn-bg: #black !important;
+--bs-btn-border-color: none !important;
+--bs-btn-hover-bg: darkgreen !important;
+  i {
+    color: darkred !important;;
+  }
+}

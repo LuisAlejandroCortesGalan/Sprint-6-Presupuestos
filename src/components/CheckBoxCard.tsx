@@ -8,11 +8,23 @@ type Props = {
   handleCheckboxChange: (
     price: number,
     isSelected: boolean,
-    card: { id: number; title: string; price: number; text: string; pages: number; languages: number }
+    card: {
+      id: number;
+      title: string;
+      price: number;
+      text: string;
+      pages: number;
+      languages: number;
+    }
   ) => void;
-  updateCard: (
-    card: { id: number; title: string; price: number; text: string; pages: number; languages: number }
-  ) => void;
+  updateCard: (card: {
+    id: number;
+    title: string;
+    price: number;
+    text: string;
+    pages: number;
+    languages: number;
+  }) => void;
 };
 
 export const CheckBoxCard = ({
@@ -46,7 +58,16 @@ export const CheckBoxCard = ({
       pages,
       languages,
     });
-  }, [isSelected, totalReal, id, title, text, pages, languages, handleCheckboxChange]);
+  }, [
+    isSelected,
+    totalReal,
+    id,
+    title,
+    text,
+    pages,
+    languages,
+    handleCheckboxChange,
+  ]);
 
   // Cuando se modifican páginas o lenguajes y la tarjeta está seleccionada, actualizar la tarjeta en el padre
   useEffect(() => {
@@ -103,6 +124,51 @@ export const CheckBoxCard = ({
           <div className="d-flex gap-3 align-items-center justify-content-end">
             <p>Número de páginas</p>
             <button
+              type="button"
+              className="btn btn-info"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+            >
+              <i className="fas fa-info"></i>
+            </button>
+
+            <div
+              className="modal fade"
+              id="exampleModal"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+            >
+              <div className="modal-dialog">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalLabel">
+                      Número de páginas
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Cerrar"
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    Agrega el numero de paginas que tendra tu proyecto. El
+                    costo de cada paginas es de 30€.
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
               className="btnNumber"
               onClick={() => updateValue(setPages, "pages", false)}
               disabled={pages === 0}
@@ -125,7 +191,51 @@ export const CheckBoxCard = ({
             </button>
           </div>
           <div className="d-flex gap-3 align-items-center justify-content-end">
-            <p>Número de lenguajes</p>
+            <p>Número de Lenguajes</p>
+            <button
+              type="button"
+              className="btn btn-info"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal1"
+            >
+              <i className="fas fa-info"></i>
+            </button>
+
+            <div
+              className="modal fade"
+              id="exampleModal1"
+              aria-labelledby="exampleModalLabel"
+              aria-hidden="true"
+            >
+              <div className="modal-dialog">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="exampleModalLabel">
+                      Número de lenguages
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Cerrar"
+                    ></button>
+                  </div>
+                  <div className="modal-body">
+                    Agrega el numero de Lenguages que tendra tu proyecto. El costo
+                    de cada Lenguage es de 30€.
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <button
               className="btnNumber"
               onClick={() => updateValue(setLanguages, "languages", false)}
