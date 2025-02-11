@@ -24,6 +24,7 @@ function Home() {
 }
 
 function App() {
+  const [promoIsActive, setPromoIsActive] = useState(false);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [selectedCards, setSelectedCards] = useState<
   { id: number; title: string; price: number; text: string; pages?: number; languages?: number }[]
@@ -68,19 +69,41 @@ function App() {
     setTotalPrice(sum);
   }, [selectedCards]);
 
+  
+  // Función que cambia el estado al hacer clic
+  const handleClick = () => {
+    setPromoIsActive(!promoIsActive);
+  }
+
   return (
     <div className="d-flex justify-content-center align-items-center flex-column min-vh-100 gap-4">
       <CardContainer />
       <div className="d-flex gap-4 flex-column align-items-center w-100">
+      <button
+      onClick={handleClick}
+      style={{
+        backgroundColor: promoIsActive ? '#007704' : '#ccc', // Color verde si activo, gris si inactivo
+        color: promoIsActive ? 'white' : 'black', // Texto blanco si activo, negro si inactivo
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s ease', // Transición suave para el cambio de color
+      }}
+    >
+      {promoIsActive ? 'Descuento Aplicado' : 'Aplicar descuento del 20%!'}
+    </button>
+    
         {cards.map((card) => (
           <div key={card.id} className="d-flex justify-content-center w-100">
             <CheckBoxCard
-              id={card.id} // Pasamos el id único
+              promoIsActive={promoIsActive} 
+              id={card.id} 
               title={card.title}
               price={card.price}
               text={card.text}
               handleCheckboxChange={handleCheckboxChange}
-              updateCard={updateCard}  // Nueva prop para actualizar la tarjeta
+              updateCard={updateCard}  
             />
           </div>
         ))}

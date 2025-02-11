@@ -1,7 +1,8 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 
 type Props = {
-  id: number; // id único
+  promoIsActive: boolean; 
+  id: number; 
   title: string;
   price: number;
   text: string;
@@ -28,6 +29,7 @@ type Props = {
 };
 
 export const CheckBoxCard = ({
+  promoIsActive,
   id,
   title,
   price,
@@ -39,7 +41,9 @@ export const CheckBoxCard = ({
   const [languages, setLanguages] = useState<number>(0);
   const [isSelected, setIsSelected] = useState<boolean>(false);
 
-  const basePrice = price;
+  let basePrice = price;
+
+  basePrice = promoIsActive ? basePrice * 0.80 : basePrice;
 
   // Calcular el precio total dinámicamente
   const totalReal = useMemo(() => {
@@ -105,6 +109,8 @@ export const CheckBoxCard = ({
           <h4>{title}</h4>
           <p>{text}</p>
         </div>
+        <p className="promo">{promoIsActive ? "Ahorra un 20%" : "" }
+        </p>
         <div className="d-flex">
           <p className="fw-bolder fs-3">{totalReal}</p>
           <span> €</span>

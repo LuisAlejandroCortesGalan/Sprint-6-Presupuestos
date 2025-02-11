@@ -169,7 +169,7 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
             </div>
           ))
         ) : (
-          <p>No se encontraron reservas con ese nombre.</p>
+          <p>No se encontraron reservas.</p>
         )}
       </div>
     </div>
