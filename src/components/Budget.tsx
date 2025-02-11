@@ -36,7 +36,7 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
       date: string;
     }[]
   >([]);
-  const [error, setError] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -44,9 +44,9 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
     const uniqueCards = selectedCards.reduce((acc: Card[], card) => {
       const index = acc.findIndex((c) => c.title === card.title);
       if (index !== -1) {
-        acc[index] = card; // Sobrescribimos con el último precio
+        acc[index] = card;
       } else {
-        acc.push(card); // Si no existe, añadimos la tarjeta
+        acc.push(card);
       }
       return acc;
     }, []);
@@ -61,18 +61,14 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
       total: totalPrice,
       date: currentDate,
     };
-    setReservations((prevReservations) => [
-      ...prevReservations,
-      newReservation,
-    ]);
 
-    // Limpiar los campos después de enviar
+    setReservations((prevReservations) => [...prevReservations, newReservation]);
+
     setName("");
     setPhone("");
     setEmail("");
   };
 
-  // Funciones para ordenar las reservas
   const sortByDate = () => {
     const sorted = [...reservations].sort((a, b) =>
       new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -92,12 +88,15 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
     setReservations(sorted);
   };
 
+  const filteredReservations = reservations.filter((reservation) =>
+    reservation.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="d-flex gap-4 flex-column align-items-center w-100">
       <div className="d-flex justify-content-center w-100">
         <div className="card shadow-lg card-selected">
           <h3>Pedir presupuesto</h3>
-          {error && <p className="text-danger">{error}</p>}
           <form onSubmit={handleSubmit}>
             <input
               type="text"
@@ -126,45 +125,52 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
           </form>
         </div>
       </div>
+
       <RequestedBudgetSection
         reservations={reservations}
+        setSearchQuery={setSearchQuery}
         sortByDate={sortByDate}
         sortByPrice={sortByPrice}
         sortByName={sortByName}
       />
+
       <div className="w-100 justify-content-center d-flex align-items-center gap-4 flex-column">
-        {reservations.map((reservation, index) => (
-          <div key={index} className="card shadow-lg p-4 flex-row">
-            <div className="card-body d-flex flex-row justify-content-between">
-              <div className="d-flex text-start flex-column">
-                <h5 className="card-title">{reservation.name}</h5>
-                <p className="card-text">
-                  <strong>Email:</strong> {reservation.email}
-                </p>
-                <p className="card-text">
-                  <strong>Teléfono:</strong> {reservation.phone}
-                </p>
-              </div>
+        {filteredReservations.length > 0 ? (
+          filteredReservations.map((reservation, index) => (
+            <div key={index} className="card shadow-lg p-4 flex-row">
+              <div className="card-body d-flex flex-row justify-content-between">
+                <div className="d-flex text-start flex-column">
+                  <h5 className="card-title">{reservation.name}</h5>
+                  <p className="card-text">
+                    <strong>Email:</strong> {reservation.email}
+                  </p>
+                  <p className="card-text">
+                    <strong>Teléfono:</strong> {reservation.phone}
+                  </p>
+                </div>
 
-              <div className="mt-3">
-                <h5 className="fw-bold">Servicios Contratados</h5>
-                <ul>
-                  {reservation.selectedCards.map((card) => (
-                    <li key={card.title + card.id}>
-                      {card.title} - {card.languages} idiomas, {card.pages}{" "}
-                      páginas
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                <div className="mt-3">
+                  <h5 className="fw-bold">Servicios Contratados</h5>
+                  <ul>
+                    {reservation.selectedCards.map((card) => (
+                      <li key={card.title + card.id}>
+                        {card.title} - {card.languages} idiomas, {card.pages}{" "}
+                        páginas
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              <div className="mt-3">
-                <h5 className="fw-bold">Total:</h5>
-                <p>€{reservation.total}</p>
+                <div className="mt-3">
+                  <h5 className="fw-bold">Total:</h5>
+                  <p>€{reservation.total}</p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No se encontraron reservas con ese nombre.</p>
+        )}
       </div>
     </div>
   );

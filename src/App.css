@@ -50,3 +50,26 @@
     color: darkred !important;;
   }
 }
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+i {
+  font-size: 18px;
+  color: #333;
+}
+
+input {
+  transition: all 0.3s ease;
+}
