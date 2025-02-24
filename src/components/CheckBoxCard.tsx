@@ -45,12 +45,10 @@ export const CheckBoxCard = ({
 
   basePrice = promoIsActive ? basePrice * 0.80 : basePrice;
 
-  // Calcular el precio total dinámicamente
   const totalReal = useMemo(() => {
     return basePrice + (pages + languages) * 30;
   }, [basePrice, pages, languages]);
 
-  // Al cambiar el checkbox, notificar al padre
   const onCheckboxChange = useCallback(() => {
     const newSelected = !isSelected;
     setIsSelected(newSelected);
@@ -73,7 +71,6 @@ export const CheckBoxCard = ({
     handleCheckboxChange,
   ]);
 
-  // Cuando se modifican páginas o lenguajes y la tarjeta está seleccionada, actualizar la tarjeta en el padre
   useEffect(() => {
     if (isSelected) {
       updateCard({
@@ -87,7 +84,6 @@ export const CheckBoxCard = ({
     }
   }, [pages, languages, totalReal, isSelected, id, title, text, updateCard]);
 
-  // Actualizar valores de páginas o lenguajes
   const updateValue = useCallback(
     (
       setter: React.Dispatch<React.SetStateAction<number>>,
@@ -119,7 +115,7 @@ export const CheckBoxCard = ({
           <input
             type="checkbox"
             checked={isSelected}
-            onChange={onCheckboxChange} // Solo se llama cuando el usuario cambia la selección
+            onChange={onCheckboxChange} 
           />
           <label>Agregar</label>
         </div>
