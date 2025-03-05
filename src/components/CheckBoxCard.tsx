@@ -121,7 +121,7 @@ export const CheckBoxCard = ({
         </div>
       </div>
 
-      {isSelected && (
+      {id === 3 && isSelected && (
         <div className="d-flex flex-column gap-3 p-3">
           <div className="d-flex gap-3 align-items-center justify-content-end">
             <p>Número de páginas</p>

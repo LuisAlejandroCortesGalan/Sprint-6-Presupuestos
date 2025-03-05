@@ -1,91 +1,19 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import RequestedBudgetSection from "./RequestedBudgetSection";
+import BudgetForm from "./BudgetForm";
+import { BudgetProps, Reservation } from "../types/budgetTypes";
+import { useSortReservations } from "../hooks/useSortReservations";
 
-interface BudgetProps {
-  totalPrice: number;
-  selectedCards: {
-    id: number;
-    title: string;
-    price: number;
-    text: string;
-    languages?: number;
-    pages?: number;
-  }[];
-}
-
-interface Card {
-  id: number;
-  title: string;
-  price: number;
-  text: string;
-  pages?: number;
-  languages?: number;
-}
-
-const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
-  const [name, setName] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [reservations, setReservations] = useState<
-    {
-      name: string;
-      phone: string;
-      email: string;
-      selectedCards: Card[];
-      total: number;
-      date: string;
-    }[]
-  >([]);
+const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards, reservations, setReservations }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { sortByDate, sortByPrice, sortByName } = useSortReservations(reservations, setReservations);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const uniqueCards = selectedCards.reduce((acc: Card[], card) => {
-      const index = acc.findIndex((c) => c.title === card.title);
-      if (index !== -1) {
-        acc[index] = card;
-      } else {
-        acc.push(card);
-      }
-      return acc;
-    }, []);
-
-    const currentDate = new Date().toLocaleString();
-
-    const newReservation = {
-      name,
-      phone,
-      email,
-      selectedCards: uniqueCards,
-      total: totalPrice,
-      date: currentDate,
-    };
-
-    setReservations((prevReservations) => [...prevReservations, newReservation]);
-
-    setName("");
-    setPhone("");
-    setEmail("");
-  };
-
-  const sortByDate = () => {
-    const sorted = [...reservations].sort((a, b) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-    setReservations(sorted);
-  };
-
-  const sortByPrice = () => {
-    const sorted = [...reservations].sort((a, b) => a.total - b.total);
-    setReservations(sorted);
-  };
-
-  const sortByName = () => {
-    const sorted = [...reservations].sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
-    setReservations(sorted);
+  const handleFormSubmit = (newReservation: Reservation) => {
+    setReservations((prevReservations) => [
+      ...prevReservations,
+      newReservation,
+    ]);
   };
 
   const filteredReservations = reservations.filter((reservation) =>
@@ -94,37 +22,7 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
 
   return (
     <div className="d-flex gap-4 flex-column align-items-center w-100">
-      <div className="d-flex justify-content-center w-100">
-        <div className="card shadow-lg card-selected">
-          <h3>Pedir presupuesto</h3>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Nombre"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="form-control"
-            />
-            <input
-              type="text"
-              placeholder="Teléfono"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="form-control"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="form-control"
-            />
-            <button type="submit" className="btn btn-dark">
-              Solicitar presupuesto <i className="fas fa-arrow-right"></i>
-            </button>
-          </form>
-        </div>
-      </div>
+      <BudgetForm totalPrice={totalPrice} selectedCards={selectedCards} onSubmit={handleFormSubmit} />
 
       <RequestedBudgetSection
         reservations={reservations}
@@ -136,10 +34,10 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
 
       <div className="w-100 justify-content-center d-flex align-items-center gap-4 flex-column">
         {filteredReservations.length > 0 ? (
-          filteredReservations.map((reservation, index) => (
-            <div key={index} className="card shadow-lg p-4 flex-row">
+          filteredReservations.map((reservation) => (
+            <div key={reservation.id} className="card shadow-lg p-4 flex-row">
               <div className="card-body d-flex flex-row justify-content-between">
-                <div className="d-flex text-start flex-column">
+                <div className="d-flex text-start flex-column personalData">
                   <h5 className="card-title">{reservation.name}</h5>
                   <p className="card-text">
                     <strong>Email:</strong> {reservation.email}
@@ -147,17 +45,34 @@ const Budget: React.FC<BudgetProps> = ({ totalPrice, selectedCards }) => {
                   <p className="card-text">
                     <strong>Teléfono:</strong> {reservation.phone}
                   </p>
+                  <p className="card-text">
+                    <strong>Enlace para compartir:</strong>{" "}
+                    <Link to={`/budget/${reservation.id}`}>
+                      {`${window.location.origin}/budget/${reservation.id}`}
+                    </Link>
+                  </p>
                 </div>
 
                 <div className="mt-3">
                   <h5 className="fw-bold">Servicios Contratados</h5>
                   <ul>
-                    {reservation.selectedCards.map((card) => (
-                      <li key={card.title + card.id}>
-                        {card.title} - {card.languages} idiomas, {card.pages}{" "}
-                        páginas
-                      </li>
-                    ))}
+                    {reservation.selectedCards
+                      .sort((a, b) =>
+                        a.title === "WEB" ? -1 : b.title === "WEB" ? 1 : 0
+                      )
+                      .map((card) => (
+                        <li key={card.id} className="text-start">
+                          {card.title}
+                          {card.title === "WEB" &&
+                            card.languages !== undefined &&
+                            card.pages !== undefined && (
+                              <>
+                                {" "}
+                                - {card.languages} idiomas, {card.pages} páginas
+                              </>
+                            )}
+                        </li>
+                      ))}
                   </ul>
                 </div>
 
