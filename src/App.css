@@ -78,3 +78,7 @@ input {
     color: darkorange !important;
     font-size: 1.2rem;
 }
+
+.personalData {
+  max-width: 50%;
+}
